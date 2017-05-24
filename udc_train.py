@@ -1,3 +1,4 @@
+# coding=utf-8
 import os
 import time
 import itertools
@@ -100,3 +101,8 @@ def main(unused_argv):
 if __name__ == "__main__":
     tf.app.run()
     # tf.train.SessionRunHook()
+    config = tf.ConfigProto()
+    config.gpu_options.per_process_gpu_memory_fraction = 0.7
+    config.gpu_options.allow_growth = True
+    sess = tf.Session(config=config)
+    tf.app.run()

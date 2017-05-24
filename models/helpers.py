@@ -2,11 +2,12 @@ import array
 import numpy as np
 import tensorflow as tf
 from collections import defaultdict
+import codecs
 
 
 def load_vocab(filename):
     vocab = None
-    with open(filename) as f:
+    with open(filename, encoding='utf-8') as f:
         vocab = f.read().splitlines()
     dct = defaultdict(int)
     for idx, word in enumerate(vocab):

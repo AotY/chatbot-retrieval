@@ -24,17 +24,19 @@ tf.flags.DEFINE_integer("max_question_len", 160, "Truncate questions to this len
 tf.flags.DEFINE_integer("max_anwser_len", 80, "Truncate anwser to this length")
 
 # Pre-trained embeddings
-tf.flags.DEFINE_string("glove_path", '/Users/LeonTao/556/Microsoft/glove.840B.300d.txt', \
+
+tf.flags.DEFINE_string("glove_path", 'data/pre-trained/glove.840B.300d.txt', \
                        "Path to pre-trained Glove vectors")
 
-tf.flags.DEFINE_string("word2vec_path", '/Users/LeonTao/556/Microsoft/GoogleNews-vectors-negative300.bin', \
+tf.flags.DEFINE_string("word2vec_path", 'data/pre-trained/GoogleNews-vectors-negative300.bin', \
                        "Path to pre-trained word2vec vectors")
 
 tf.flags.DEFINE_string("fastText_path", None, "Path to pre-trained fastText vectors")
 
 # 这个应该是训练文本里面出现的词汇集合
 # tf.flags.DEFINE_string("vocab_path", None, "Path to vocabulary.txt file")
-tf.flags.DEFINE_string("vocab_path", '/Users/LeonTao/556/Microsoft/chatbot-retrieval/data/BoP2017_DBAQ_dev_train_data/vocabulary.txt', \
+
+tf.flags.DEFINE_string("vocab_path", 'data/BoP2017_DBAQ_dev_train_data/vocabulary.txt', \
                        "Path to vocabulary.txt file")
 
 tf.flags.DEFINE_string("vector_type", 'word2vec', 'word2vec or glove or fastText')
