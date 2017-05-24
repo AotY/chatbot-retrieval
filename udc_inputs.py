@@ -6,13 +6,13 @@ def get_feature_columns(mode):
   feature_columns = []
 
   feature_columns.append(tf.contrib.layers.real_valued_column(
-    column_name="context", dimension=TEXT_FEATURE_SIZE, dtype=tf.int64))
+    column_name="question", dimension=TEXT_FEATURE_SIZE, dtype=tf.int64))
   feature_columns.append(tf.contrib.layers.real_valued_column(
-      column_name="context_len", dimension=1, dtype=tf.int64))
+      column_name="question_len", dimension=1, dtype=tf.int64))
   feature_columns.append(tf.contrib.layers.real_valued_column(
-      column_name="utterance", dimension=TEXT_FEATURE_SIZE, dtype=tf.int64))
+      column_name="anwser", dimension=TEXT_FEATURE_SIZE, dtype=tf.int64))
   feature_columns.append(tf.contrib.layers.real_valued_column(
-      column_name="utterance_len", dimension=1, dtype=tf.int64))
+      column_name="anwser_len", dimension=1, dtype=tf.int64))
 
   if mode == tf.contrib.learn.ModeKeys.TRAIN:
     # During training we have a label feature
@@ -30,7 +30,16 @@ def get_feature_columns(mode):
   return set(feature_columns)
 
 
+'''
+1. Create a feature definition that describes the fields in our Example file
+2. Read records from the input_files with tf.TFRecordReader
+3. Parse the records according to the feature definition
+4. Extract the training labels
+5. Batch multiple examples and training labels
+6. Return the batched examples and training labels
+'''
 def create_input_fn(mode, input_files, batch_size, num_epochs):
+
   def input_fn():
     features = tf.contrib.layers.create_feature_spec_for_parsing(
         get_feature_columns(mode))

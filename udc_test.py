@@ -24,6 +24,7 @@ tf.logging.set_verbosity(FLAGS.loglevel)
 if __name__ == "__main__":
   hparams = udc_hparams.create_hparams()
   model_fn = udc_model.create_model_fn(hparams, model_impl=dual_encoder_model)
+
   estimator = tf.contrib.learn.Estimator(
     model_fn=model_fn,
     model_dir=FLAGS.model_dir,
