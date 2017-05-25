@@ -17,7 +17,8 @@ tf.flags.DEFINE_string("input_dir", "./data/BoP2017_DBAQ_dev_train_data/",
 tf.flags.DEFINE_string("model_dir", None, "Directory to store model checkpoints (defaults to ./runs)")
 tf.flags.DEFINE_integer("loglevel", 20, "Tensorflow log level")
 tf.flags.DEFINE_integer("num_epochs", None, "Number of training Epochs. Defaults to indefinite.")
-tf.flags.DEFINE_integer("eval_every", 2, "Evaluate after this many train steps")
+tf.flags.DEFINE_integer("eval_every", 5, "Evaluate after this many train steps")
+# tf.flags.DEFINE_integer("eval_every", 2000, "Evaluate after this many train steps")
 # tf.flags.DEFINE_string("test", None, "description")
 FLAGS = tf.flags.FLAGS
 
@@ -101,7 +102,7 @@ def main(unused_argv):
 
 if __name__ == "__main__":
     # tf.app.run()
-    # tf.train.SessionRunHook()
+    tf.train.SessionRunHook()
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = 0.7
     config.gpu_options.allow_growth = True

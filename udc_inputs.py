@@ -15,7 +15,11 @@ def get_feature_columns(mode):
     feature_columns.append(tf.contrib.layers.real_valued_column(
         column_name="anwser_len", dimension=1, dtype=tf.int64))
 
-    feature_columns.append(tf.contrib.layers.real_valued_column(column_name='label', dimension=1, dtype=tf.int64))
+    # During training we have a label feature
+    if mode == tf.contrib.learn.ModeKeys.TRAIN or mode == tf.contrib.learn.ModeKeys.EVAL:
+        feature_columns.append(
+            tf.contrib.layers.real_valued_column(column_name='label', dimension=1, dtype=tf.int64)
+        )
 
     # if mode == tf.contrib.learn.ModeKeys.TRAIN:
     #     # During training we have a label feature
@@ -57,6 +61,8 @@ example given features specification.
 return A dict of Tensor or SparseTensor objects for each in features.
 
 '''
+
+
 def create_input_fn(mode, input_files, batch_size, num_epochs):
     def input_fn():
         features = tf.contrib.layers.create_feature_spec_for_parsing(
@@ -80,13 +86,12 @@ def create_input_fn(mode, input_files, batch_size, num_epochs):
                 "read_batch_features_eval/file_name_queue/limit_epochs/epochs",
                 initializer=tf.constant(0, dtype=tf.int64))
 
-        target = feature_map.pop('label')
-        # if mode == tf.contrib.learn.ModeKeys.TRAIN:
-        #   target = feature_map.pop("label")
-        # else:
-        #   # In evaluation we have 10 classes (utterances).
-        #   # The first one (index 0) is always the correct one
-        #   target = tf.zeros([batch_size, 1], dtype=tf.int64)
+        if mode == tf.contrib.learn.ModeKeys.TRAIN:
+            target = feature_map.pop("label")
+        else:
+            # In evaluation we have 10 utterances.
+            # The first one (index 0) is always the correct one
+            target = tf.zeros([batch_size, 1], dtype=tf.int64)
         return feature_map, target
 
     return input_fn

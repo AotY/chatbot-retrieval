@@ -52,7 +52,7 @@ def get_embeddings(hparams):
 
     return tf.get_variable(
         "word_embeddings",
-        # shape=[hparams.vocab_size, hparams.embedding_dim],
+        shape=[hparams.vocab_size, hparams.embedding_dim],
         initializer=initializer)
 
 

@@ -9,7 +9,11 @@ Luckily, Tensorflow already comes with many standard evaluation metrics that we 
 To use these metrics we need to create a dictionary that maps from a metric name to a function that takes the
 predictions and label as arguments:
 
+资格赛MRR评分计算
+1. 为保证结果公正，程序会对每个答案集合里相等的实数值进行随机排序。
+在这种情况下，同一结果提交两次，MRR评分会不同。
 
+2. 此程序是计算模型在开发集数据上的表现。
 '''
 def create_evaluation_metrics():
     eval_metrics = {}

@@ -10,7 +10,7 @@ This hparams object is given to the model when we instantiate it.
 tf.flags.DEFINE_integer(
     "vocab_size",
     # 91620,
-    61353,
+    67878,
     "The size of the vocabulary. Only change this if you changed the preprocessing")
 
 # Model Parameters

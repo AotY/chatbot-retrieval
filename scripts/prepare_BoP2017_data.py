@@ -78,7 +78,8 @@ def tokenizer_fn(iterator):
     # return (x.split(" ") for x in iterator)
     # # 精确模式 HMM 参数用来控制是否使用 HMM 模型  于未登录词，采用了基于汉字成词能力的 HMM 模型，使用了 Viterbi 算法
     for x in iterator:
-        seg_list = jieba.cut(x, cut_all=False, HMM=True)
+        # seg_list = jieba.cut(x, cut_all=False, HMM=True)
+        seg_list = jieba.cut(x, cut_all=True, HMM=True) #精确模式
         # seg_list = jieba.cut_for_search("小明硕士毕业于中国科学院计算所，后在日本京都大学深造")  # 搜索引擎模式
         # print('seg_list', seg_list)
         no_stop_list = remove_stop(seg_list)
