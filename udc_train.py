@@ -32,6 +32,7 @@ else:
 # 训练数据集和训练验证数据集
 TRAIN_FILE = os.path.abspath(os.path.join(FLAGS.input_dir, "train.tfrecords"))
 VALIDATION_FILE = os.path.abspath(os.path.join(FLAGS.input_dir, "validation.tfrecords"))
+# TEST_FILE = os.path.abspath(os.path.join(FLAGS.input_dir, "test.tfrecords"))
 
 # 设置日志等级
 tf.logging.set_verbosity(FLAGS.loglevel)
@@ -99,7 +100,7 @@ def main(unused_argv):
 
 
 if __name__ == "__main__":
-    tf.app.run()
+    # tf.app.run()
     # tf.train.SessionRunHook()
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = 0.7

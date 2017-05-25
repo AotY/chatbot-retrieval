@@ -160,7 +160,7 @@ def create_example_train(row, vocab):
     example.features.feature["question_len"].int64_list.value.extend([question_len])
     example.features.feature["anwser_len"].int64_list.value.extend([anwser_len])
     example.features.feature["label"].int64_list.value.extend([label])
-    return example  # 返回一样样例
+    return example  # 返回一个样例
 
 
 def create_tfrecords_file(input_filename, output_filename, example_fn):

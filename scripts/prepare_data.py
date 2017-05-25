@@ -193,7 +193,6 @@ if __name__ == "__main__":
 
   # Create vocabulary.txt file
   vocab = create_vocab(input_iter, min_frequency=FLAGS.min_word_frequency)
-
   print("Total vocabulary size: {}".format(len(vocab.vocabulary_)))
   write_vocabulary(
     vocab, os.path.join(FLAGS.output_dir, "vocabulary.txt"))
