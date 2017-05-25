@@ -40,7 +40,8 @@ tf.flags.DEFINE_string("vocab_path", 'data/BoP2017_DBAQ_dev_train_data/vocabular
                        "Path to vocabulary.txt file")
 
 # tf.flags.DEFINE_string("vector_type", 'word2vec', 'word2vec or glove or fastText')
-tf.flags.DEFINE_string("vector_type", 'glove', 'word2vec or glove or fastText')
+# tf.flags.DEFINE_string("vector_type", 'glove', 'word2vec or glove or fastText')
+tf.flags.DEFINE_string("vector_type", 'None', 'word2vec or glove or fastText')
 
 # Training Parameters
 tf.flags.DEFINE_float("learning_rate", 0.001, "Learning rate")

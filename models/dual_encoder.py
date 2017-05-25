@@ -50,6 +50,7 @@ def get_embeddings(hparams):
         tf.logging.info("No glove/vocab path specificed, starting with random embeddings.")
         initializer = tf.random_uniform_initializer(-0.25, 0.25)  # 随机均匀
 
+    # If initializer is a constant, do not specify shape.
     return tf.get_variable(
         "word_embeddings",
         shape=[hparams.vocab_size, hparams.embedding_dim],
@@ -100,7 +101,7 @@ def dual_encoder_model(
 
         # "Predict" a response: c * M
         generated_response = tf.matmul(encoding_question, M)
-        generated_response = tf.expand_dims(generated_response, 2)
+        generated_response = tf.expand_dims(generated_response, 2)  # Inserts a dimension of 1 into a tensor's shape.
 
         encoding_anwser = tf.expand_dims(encoding_anwser, 2)
 
@@ -108,10 +109,12 @@ def dual_encoder_model(
         # (c * M) * r
         # logits = tf.batch_matmul(generated_response, encoding_anwser, True)
         logits = tf.matmul(generated_response, encoding_anwser, True)
-        logits = tf.squeeze(logits, [2])
+        logits = tf.squeeze(logits, [2])  # Removes dimensions of size 1 from the shape of a tensor.
 
         # Apply sigmoid to convert logits to probabilities
         probs = tf.sigmoid(logits)
+
+
 
         if mode == tf.contrib.learn.ModeKeys.INFER:
             return probs, None

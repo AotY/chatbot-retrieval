@@ -17,7 +17,7 @@ tf.flags.DEFINE_string("input_dir", "./data/BoP2017_DBAQ_dev_train_data/",
 tf.flags.DEFINE_string("model_dir", None, "Directory to store model checkpoints (defaults to ./runs)")
 tf.flags.DEFINE_integer("loglevel", 20, "Tensorflow log level")
 tf.flags.DEFINE_integer("num_epochs", None, "Number of training Epochs. Defaults to indefinite.")
-tf.flags.DEFINE_integer("eval_every", 5, "Evaluate after this many train steps")
+tf.flags.DEFINE_integer("eval_every", 1, "Evaluate after this many train steps")
 # tf.flags.DEFINE_integer("eval_every", 2000, "Evaluate after this many train steps")
 # tf.flags.DEFINE_string("test", None, "description")
 FLAGS = tf.flags.FLAGS
@@ -82,7 +82,8 @@ def main(unused_argv):
         batch_size=hparams.eval_batch_size,
         num_epochs=1)
 
-    eval_metrics = udc_metrics.create_evaluation_metrics()
+    # eval_metrics = udc_metrics.create_evaluation_metrics()
+    eval_metrics = None
 
     """Runs evaluation of a given estimator, at most every N steps.
 
@@ -98,6 +99,7 @@ def main(unused_argv):
         metrics=eval_metrics)
 
     estimator.fit(input_fn=input_fn_train, steps=None, monitors=[eval_monitor])
+    # estimator.fit(input_fn=input_fn_train, steps=None, monitors=None)
 
 
 if __name__ == "__main__":

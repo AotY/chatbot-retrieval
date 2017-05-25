@@ -19,7 +19,7 @@ def create_train_op(loss, hparams):
     return train_op
 
 
-#创建模型方法，返回model_fn()方法
+# 创建模型方法，返回model_fn()方法
 def create_model_fn(hparams, model_impl):
     def model_fn(features, targets, mode):
 
@@ -32,7 +32,7 @@ def create_model_fn(hparams, model_impl):
         batch_size = targets.get_shape().as_list()[0]
 
         if mode == tf.contrib.learn.ModeKeys.TRAIN:
-            probs, loss = model_impl(
+            probs, mean_loss = model_impl(
                 hparams,
                 mode,
                 question,
@@ -40,11 +40,11 @@ def create_model_fn(hparams, model_impl):
                 anwser,
                 anwser_len,
                 targets)
-            train_op = create_train_op(loss, hparams)
-            return probs, loss, train_op
+            train_op = create_train_op(mean_loss, hparams)
+            return probs, mean_loss, train_op
 
         if mode == tf.contrib.learn.ModeKeys.INFER:
-            probs, loss = model_impl(
+            probs, mean_loss = model_impl(
                 hparams,
                 mode,
                 question,
@@ -55,51 +55,43 @@ def create_model_fn(hparams, model_impl):
             return probs, 0.0, None
 
         if mode == tf.contrib.learn.ModeKeys.EVAL:
-            # We have 10 exampels per record, so we accumulate them
-            all_questions = [question]
-            all_question_lens = [question_len]
-            all_anwsers = [anwser]
-            all_anwser_lens = [anwser_len]
-            all_targets = [tf.ones([batch_size, 1], dtype=tf.int64)]
-
-            for i in range(9):
-                distractor, distractor_len = get_id_feature(features,
-                                                            "distractor_{}".format(i),
-                                                            "distractor_{}_len".format(i),
-                                                            hparams.max_anwser_len)
-                all_questions.append(question)
-                all_question_lens.append(question_len)
-                all_anwsers.append(distractor)
-                all_anwser_lens.append(distractor_len)
-                all_targets.append(
-                    tf.zeros([batch_size, 1], dtype=tf.int64)
-                )
-
-            probs, loss = model_impl(
+            probs, mean_loss = model_impl(
                 hparams,
                 mode,
-                tf.concat(all_questions, 0),
-                tf.concat(all_question_lens, 0),
-                tf.concat(all_anwsers, 0),
-                tf.concat(all_anwser_lens, 0),
-                tf.concat(all_targets, 0))
+                question,
+                question_len,
+                anwser,
+                anwser_len,
+                # tf.zeros([batch_size, 1], dtype=tf.int64)
+                targets
+            )
 
-        split_probs = tf.split(probs, 10, 0)
-        shaped_probs = tf.concat(split_probs, 1)
+        # with tf.Session().as_default():
+        print('probs: ', tf.shape(probs))
+        print('mean_loss:  ', tf.shape(mean_loss))
+
+        # split_probs = tf.split(probs, 10, 0) # Caused by op 'split', defined at:
+        # split_probs = tf.split(probs, 1, 0) # Caused by op 'split', defined at:
+        # split_probs = tf.split(probs, 2, 0) # Caused by op 'split', defined at:
+        # shaped_probs = tf.concat(split_probs, 1)
 
         # Add summaries
         # tf.summary.merge_all()
-        tf.summary.histogram("eval_correct_probs_hist", split_probs[0])
-        tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(split_probs[0]))
+        # tf.summary.histogram("eval_correct_probs_hist", probs)
+        # tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs))
 
-        tf.summary.histogram("eval_incorrect_probs_hist", split_probs[1])
-        tf.summary.scalar("eval_incorrect_probs_average", tf.reduce_mean(split_probs[1]))
-        #
+        # tf.summary.histogram("eval_correct_probs_hist", probs[0])
+        # tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs[0]))
+
+        # tf.summary.histogram("eval_incorrect_probs_hist", probs[1])
+        # tf.summary.scalar("eval_incorrect_probs_average", tf.reduce_mean(probs[1]))
+
+
         # tf.histogram_summary("eval_correct_probs_hist", split_probs[0])
         # tf.scalar_summary("eval_correct_probs_average", tf.reduce_mean(split_probs[0]))
         # tf.histogram_summary("eval_incorrect_probs_hist", split_probs[1])
         # tf.scalar_summary("eval_incorrect_probs_average", tf.reduce_mean(split_probs[1]))
 
-        return shaped_probs, loss, None
+        return probs, mean_loss, None
 
     return model_fn
