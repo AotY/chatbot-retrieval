@@ -99,6 +99,7 @@ def dual_encoder_model(
                             shape=[hparams.rnn_dim, hparams.rnn_dim],
                             initializer=tf.truncated_normal_initializer())
 
+        print("M shape: ", tf.shape(M))
         # "Predict" a response: c * M
         generated_response = tf.matmul(encoding_question, M)
         generated_response = tf.expand_dims(generated_response, 2)  # Inserts a dimension of 1 into a tensor's shape.
@@ -110,11 +111,13 @@ def dual_encoder_model(
         # logits = tf.batch_matmul(generated_response, encoding_anwser, True)
         logits = tf.matmul(generated_response, encoding_anwser, True)
         logits = tf.squeeze(logits, [2])  # Removes dimensions of size 1 from the shape of a tensor.
+        print("logits shape: ", tf.shape(logits))
 
         # Apply sigmoid to convert logits to probabilities
         probs = tf.sigmoid(logits)
 
-
+        print("probs shape: ", tf.shape(probs))
+        print("targets shape: ", tf.shape(targets))
 
         if mode == tf.contrib.learn.ModeKeys.INFER:
             return probs, None

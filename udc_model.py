@@ -55,6 +55,7 @@ def create_model_fn(hparams, model_impl):
             return probs, 0.0, None
 
         if mode == tf.contrib.learn.ModeKeys.EVAL:
+            targets = tf.ones([batch_size, 1], dtype=tf.int64)
             probs, mean_loss = model_impl(
                 hparams,
                 mode,
@@ -62,7 +63,6 @@ def create_model_fn(hparams, model_impl):
                 question_len,
                 anwser,
                 anwser_len,
-                # tf.zeros([batch_size, 1], dtype=tf.int64)
                 targets
             )
 
@@ -77,8 +77,8 @@ def create_model_fn(hparams, model_impl):
 
         # Add summaries
         # tf.summary.merge_all()
-        # tf.summary.histogram("eval_correct_probs_hist", probs)
-        # tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs))
+        tf.summary.histogram("eval_correct_probs_hist", probs)
+        tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs))
 
         # tf.summary.histogram("eval_correct_probs_hist", probs[0])
         # tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs[0]))
