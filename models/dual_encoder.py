@@ -53,7 +53,7 @@ def get_embeddings(hparams):
     # If initializer is a constant, do not specify shape.
     return tf.get_variable(
         "word_embeddings",
-        shape=[hparams.vocab_size, hparams.embedding_dim],
+        # shape=[hparams.vocab_size, hparams.embedding_dim],
         initializer=initializer)
 
 
@@ -65,6 +65,7 @@ def dual_encoder_model(
         anwser,
         anwser_len,
         targets):
+
     # Initialize embedidngs randomly or with pre-trained vectors if available（替换为提前训练好的 vectors)
     embeddings_W = get_embeddings(hparams)
 
@@ -95,6 +96,7 @@ def dual_encoder_model(
 
     with tf.variable_scope("prediction") as vs:
         # 训练矩阵, ("rnn_dim", 256, "Dimensionality of the RNN cell")
+
         M = tf.get_variable("M",
                             shape=[hparams.rnn_dim, hparams.rnn_dim],
                             initializer=tf.truncated_normal_initializer())
@@ -123,7 +125,9 @@ def dual_encoder_model(
             return probs, None
 
         # Calculate the binary cross-entropy loss
-        losses = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=tf.to_float(targets))
+        losses = tf.nn.sigmoid_cross_entropy_with_logits(
+            logits=logits, labels=tf.to_float(targets)
+        )
 
     # Mean loss across the batch of examples
     mean_loss = tf.reduce_mean(losses, name="mean_loss")

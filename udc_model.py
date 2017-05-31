@@ -4,8 +4,9 @@ import sys
 
 def get_id_feature(features, key, len_key, max_len):
     ids = features[key]
-    ids_len = tf.squeeze(features[len_key], [1])
-    ids_len = tf.minimum(ids_len, tf.constant(max_len, dtype=tf.int64))
+    ids_len = tf.squeeze(features[len_key], [1]) #Removes dimensions of size 1 from the shape of a tensor.
+    ids_len = tf.minimum(ids_len, tf.constant(max_len, dtype=tf.int64)) #ids_len = tf.minimum(ids_len, tf.constant(max_len, dtype=tf.int64)) #
+
     return ids, ids_len
 
 
@@ -55,34 +56,45 @@ def create_model_fn(hparams, model_impl):
             return probs, 0.0, None
 
         if mode == tf.contrib.learn.ModeKeys.EVAL:
-            # targets = tf.ones([batch_size, 1], dtype=tf.int64)
-            # probs, mean_loss = model_impl(
-            #     hparams,
-            #     mode,
-            #     question,
-            #     question_len,
-            #     anwser,
-            #     anwser_len,
-            #     targets
-            # )
-            all_contexts = [question]
-            all_context_lens = [question_len]
-            all_utterances = [anwser]
-            all_utterance_lens = [anwser_len]
-            all_targets = [tf.ones([batch_size, 1], dtype=tf.int64)]
-
+            all_questions = [question]
+            all_question_lens = [question_len]
+            all_anwsers = [anwser]
+            all_anwser_lens = [anwser_len]
+            # all_targets = [tf.ones([batch_size, 1], dtype=tf.int64)]
+            all_targets = [targets]
             probs, mean_loss = model_impl(
                 hparams,
                 mode,
-                tf.concat(all_contexts, 0),
-                tf.concat(all_context_lens, 0),
-                tf.concat(all_utterances, 0),
-                tf.concat(all_utterance_lens, 0),
+                tf.concat(all_questions, 0),
+                tf.concat(all_question_lens, 0),
+                tf.concat(all_anwsers, 0),
+                tf.concat(all_anwser_lens, 0),
                 tf.concat(all_targets, 0)
             )
+            split_probs = tf.split(probs, 1, 0)
+            shaped_probs = tf.concat(split_probs, 1)
 
-        split_probs = tf.split(probs, 1, 0)
-        shaped_probs = tf.concat(split_probs, 1)
+            tf.summary.histogram("eval_correct_probs_hist", split_probs[0])
+            tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(split_probs[0]))
+
+            return shaped_probs, mean_loss, None
+
+        if mode == tf.contrib.learn.ModeKeys.EVAL:
+            probs, mean_loss = model_impl(
+                hparams,
+                mode,
+                question,
+                question_len,
+                anwser,
+                anwser_len,
+                targets)
+
+            tf.summary.histogram("eval_correct_probs_hist", probs)
+            tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs))
+
+            return probs, mean_loss
+
+
 
         # with tf.Session().as_default():
         # print('probs: ', tf.shape(probs))
@@ -98,18 +110,15 @@ def create_model_fn(hparams, model_impl):
         # tf.summary.histogram("eval_correct_probs_hist", probs)
         # tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs))
 
-        tf.summary.histogram("eval_correct_probs_hist", split_probs[0])
-        tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(split_probs[0]))
 
         # tf.summary.histogram("eval_incorrect_probs_hist", split_probs[1])
         # tf.summary.scalar("eval_incorrect_probs_average", tf.reduce_mean(split_probs[1]))
-
 
         # tf.histogram_summary("eval_correct_probs_hist", split_probs[0])
         # tf.scalar_summary("eval_correct_probs_average", tf.reduce_mean(split_probs[0]))
         # tf.histogram_summary("eval_incorrect_probs_hist", split_probs[1])
         # tf.scalar_summary("eval_incorrect_probs_average", tf.reduce_mean(split_probs[1]))
 
-        return shaped_probs, mean_loss, None
+
 
     return model_fn

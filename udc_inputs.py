@@ -16,15 +16,19 @@ def get_feature_columns(mode):
         column_name="anwser_len", dimension=1, dtype=tf.int64))
 
     # During training we have a label feature
-    if mode == tf.contrib.learn.ModeKeys.TRAIN or mode == tf.contrib.learn.ModeKeys.EVAL:
-        feature_columns.append(
-            tf.contrib.layers.real_valued_column(column_name='label', dimension=1, dtype=tf.int64)
-        )
+    # if mode == tf.contrib.learn.ModeKeys.TRAIN or mode == tf.contrib.learn.ModeKeys.EVAL:
+    #     feature_columns.append(
+    #         tf.contrib.layers.real_valued_column(column_name='label', dimension=1, dtype=tf.int64)
+    #     )
 
-    # if mode == tf.contrib.learn.ModeKeys.TRAIN:
-    #     # During training we have a label feature
-    #     feature_columns.append(tf.contrib.layers.real_valued_column(
-    #         column_name="label", dimension=1, dtype=tf.int64))
+    if mode == tf.contrib.learn.ModeKeys.TRAIN:
+        # During training we have a label feature
+        feature_columns.append(tf.contrib.layers.real_valued_column(
+            column_name="label", dimension=1, dtype=tf.int64))
+
+    if mode == tf.contrib.learn.ModeKeys.EVAL:
+        feature_columns.append(tf.contrib.layers.real_valued_column(
+            column_name="label", dimension=1, dtype=tf.int64))
     #
     # if mode == tf.contrib.learn.ModeKeys.EVAL:
     #     # During evaluation we have distractors
@@ -92,7 +96,9 @@ def create_input_fn(mode, input_files, batch_size, num_epochs):
         else:
             # In evaluation we have 10 utterances.
             # The first one (index 0) is always the correct one
-            target = tf.zeros([batch_size, 1], dtype=tf.int64)
+            # target = tf.zeros([batch_size, 1], dtype=tf.int64)
+            #我们需要改为label
+            target = feature_map.pop("label")
         return feature_map, target
 
     return input_fn

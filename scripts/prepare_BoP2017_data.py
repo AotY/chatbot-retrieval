@@ -1,12 +1,8 @@
 import codecs
 import os
-import csv
-import itertools
 import functools
 from pybloom import BloomFilter
 import tensorflow as tf
-import numpy as np
-import array
 import jieba
 
 '''
@@ -149,7 +145,6 @@ def create_example_train(row, vocab):
     anwser_len = len(next(vocab._tokenizer([anwser])))
 
     label = label.rstrip()
-
     label = label[-1]
     # print(label)
     label = int(float(label))
@@ -159,8 +154,8 @@ def create_example_train(row, vocab):
     example.features.feature["question"].int64_list.value.extend(question_transformed)
     example.features.feature["anwser"].int64_list.value.extend(anwser_transformed)
     example.features.feature["question_len"].int64_list.value.extend([question_len])
-    example.features.feature["anwser_len"].int64_list.value.extend([anwser_len])
-    example.features.feature["label"].int64_list.value.extend([label])
+    example.featlquestionabelures.feature["anwser_len"].int64_list.value.extend([anwser_len])
+    example.features.feature["lquestionabel"].int64_list.value.extend([label])
     return example  # 返回一个样例
 
 
