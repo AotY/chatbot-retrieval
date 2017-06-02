@@ -118,5 +118,7 @@ if __name__ == "__main__":
     print("question: {}".format(INPUT_question))
     for r in POTENTIAL_RESPONSES:
         prob = estimator.predict(input_fn=lambda: get_features(INPUT_question, r))
-        # print("{}: {:g}".format(r, prob[0, 0]))
-        print("{}: {}".format(r, prob.next()[0]))
+        # print("prob ", prob)
+        print("prob ", list(prob))
+        # print("prob ", list(prob)[0])
+        # print("{}: {}".format(r, prob.next()[0]))
