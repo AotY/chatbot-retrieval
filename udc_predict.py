@@ -25,8 +25,8 @@ vp = tf.contrib.learn.preprocessing.VocabularyProcessor.restore(
   FLAGS.vocab_processor_file)
 
 # Load your own data here
-INPUT_question = "Example question"
-POTENTIAL_RESPONSES = ["Response 1", "Response 2"]
+INPUT_question = "香港会议展览中心会展2期的屋顶的是由什么建成的，形状是什么？"
+POTENTIAL_RESPONSES = ["香港会议展览中心（简称会展；英语：Hong Kong Convention and Exhibition Centre，缩写：HKCEC）是香港的主要大型会议及展览场地，位于香港岛湾仔北岸，是香港地标之一；由香港政府及香港贸易发展局共同拥有，由新创建集团的全资附属机构香港会议展览中心（管理）有限公司管理。", "会展2期的屋顶以4万平方呎的铝合金造成，形状像是一只飞鸟。"]
 
 def get_features(question, anwser):
   question_matrix = np.array(list(vp.transform([question])))
@@ -41,6 +41,7 @@ def get_features(question, anwser):
   }
   return features, None
 
+# 提交时间：2017年6月6日12:00am前
 if __name__ == "__main__":
   hparams = udc_hparams.create_hparams()
   model_fn = udc_model.create_model_fn(hparams, model_impl=dual_encoder_model)
