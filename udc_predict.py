@@ -15,7 +15,8 @@ import udc_metrics
 import udc_inputs
 from models.dual_encoder import dual_encoder_model
 from models.helpers import load_vocab
-from termcolor import colored
+
+# from termcolor import colored
 
 tf.flags.DEFINE_string("model_dir", None, "Directory to load model checkpoints from")
 tf.flags.DEFINE_string("vocab_processor_file", "./data/BoP2017_DBAQ_dev_train_data/vocab_processor.bin",
@@ -30,6 +31,7 @@ tf.flags.DEFINE_string(
     "Output directory for TFrEcord files (default = './..data/BoP2017_DBAQ_dev_train_data/')")
 
 FLAGS = tf.flags.FLAGS
+DEV_PATH = os.path.join(FLAGS.input_dir, "dev.txt")
 
 if not FLAGS.model_dir:
     print("You must specify a model directory")
@@ -80,11 +82,29 @@ def remove_stop(seg_list):
 vp = tf.contrib.learn.preprocessing.VocabularyProcessor.restore(
     FLAGS.vocab_processor_file)
 
+INPUT_questions = {}
+POTENTIAL_RESPONSES = []
+last_question = '香港会议展览中心会展2期的屋顶的是由什么建成的，形状是什么？'
+with codecs.open(DEV_PATH, encoding='utf-8') as file:
+    for line in file:
+        line = line.rstrip()
+        label, question, anwser = line.split('\t')
+
+        if question != last_question:
+            INPUT_questions[last_question] = POTENTIAL_RESPONSES
+            POTENTIAL_RESPONSES = []
+
+        POTENTIAL_RESPONSES.append(anwser)
+
+        last_question = question
+print('len INPUT_questions: ', len(INPUT_questions))
+
 # Load your own data here
-INPUT_question = "香港会议展览中心会展2期的屋顶的是由什么建成的，形状是什么？"
-POTENTIAL_RESPONSES = [
-    "香港会议展览中心（简称会展；英语：Hong Kong Convention and Exhibition Centre，缩写：HKCEC）是香港的主要大型会议及展览场地，位于香港岛湾仔北岸，是香港地标之一；由香港政府及香港贸易发展局共同拥有，由新创建集团的全资附属机构香港会议展览中心（管理）有限公司管理。",
-    "会展2期的屋顶以4万平方呎的铝合金造成，形状像是一只飞鸟。"]
+# INPUT_question = "香港会议展览中心会展2期的屋顶的是由什么建成的，形状是什么？"
+# POTENTIAL_RESPONSES = [
+#     "香港会议展览中心（简称会展；英语：Hong Kong Convention and Exhibition Centre，缩写：HKCEC）是香港的主要大型会议及展览场地，位于香港岛湾仔北岸，是香港地标之一；由香港政府及香港贸易发展局共同拥有，由新创建集团的全资附属机构香港会议展览中心（管理）有限公司管理。",
+#     "会展2期的屋顶以4万平方呎的铝合金造成，形状像是一只飞鸟。"]
+
 
 
 def get_features(question, anwser):
@@ -115,10 +135,22 @@ if __name__ == "__main__":
 
     estimator = tf.contrib.learn.Estimator(model_fn=model_fn, model_dir=FLAGS.model_dir)
 
-    print("question: {}".format(INPUT_question))
-    for r in POTENTIAL_RESPONSES:
-        prob = estimator.predict(input_fn=lambda: get_features(INPUT_question, r))
-        # print("prob ", prob)
-        print("prob ", list(prob))
-        # print("prob ", list(prob)[0])
-        # print("{}: {}".format(r, prob.next()[0]))
+    for question in INPUT_questions:
+        anwsers = INPUT_questions.get(question)
+        print("question: {}".format(question))
+        for a in anwsers:
+            prob = estimator.predict(input_fn=lambda: get_features(question, a))
+            print("prob float", float(prob))
+            print("prob list", list(prob))
+
+
+
+
+    # print("question: {}".format(INPUT_question))
+    # for r in POTENTIAL_RESPONSES:
+    #     prob = estimator.predict(input_fn=lambda: get_features(INPUT_question, r))
+    #     # print("prob ", prob)
+    #     print("prob type", type(prob))
+    #     print("prob ", prob)
+    #     # print("prob ", list(prob)[0])
+    #     # print("{}: {}".format(r, prob.next()[0]))
