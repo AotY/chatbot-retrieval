@@ -19,7 +19,8 @@ tf.flags.DEFINE_integer(
 # using pretrained vector
 tf.flags.DEFINE_integer("embedding_dim", 300, "Dimensionality of the embeddings")
 
-tf.flags.DEFINE_integer("rnn_dim", 256, "Dimensionality of the RNN cell")
+# tf.flags.DEFINE_integer("rnn_dim", 256, "Dimensionality of the RNN cell")
+tf.flags.DEFINE_integer("rnn_dim", 128, "Dimensionality of the RNN cell")
 tf.flags.DEFINE_integer("max_question_len", 160, "Truncate questions to this length")
 tf.flags.DEFINE_integer("max_anwser_len", 80, "Truncate anwser to this length")
 

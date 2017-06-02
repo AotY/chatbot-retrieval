@@ -30,7 +30,8 @@ def create_model_fn(hparams, model_impl):
         anwser, anwser_len = get_id_feature(
             features, "anwser", "anwser_len", hparams.max_anwser_len)
 
-        batch_size = targets.get_shape().as_list()[0]
+        if targets is not None:
+            batch_size = targets.get_shape().as_list()[0]
 
         if mode == tf.contrib.learn.ModeKeys.TRAIN:
             probs, mean_loss = model_impl(
@@ -79,20 +80,20 @@ def create_model_fn(hparams, model_impl):
 
             return shaped_probs, mean_loss, None
 
-        if mode == tf.contrib.learn.ModeKeys.EVAL:
-            probs, mean_loss = model_impl(
-                hparams,
-                mode,
-                question,
-                question_len,
-                anwser,
-                anwser_len,
-                targets)
-
-            tf.summary.histogram("eval_correct_probs_hist", probs)
-            tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs))
-
-            return probs, mean_loss
+        # if mode == tf.contrib.learn.ModeKeys.EVAL:
+        #     probs, mean_loss = model_impl(
+        #         hparams,
+        #         mode,
+        #         question,
+        #         question_len,
+        #         anwser,
+        #         anwser_len,
+        #         targets)
+        #
+        #     tf.summary.histogram("eval_correct_probs_hist", probs)
+        #     tf.summary.scalar("eval_correct_probs_average", tf.reduce_mean(probs))
+        #
+        #     return probs, mean_loss
 
 
 

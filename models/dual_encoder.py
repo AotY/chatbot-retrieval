@@ -125,9 +125,7 @@ def dual_encoder_model(
             return probs, None
 
         # Calculate the binary cross-entropy loss
-        losses = tf.nn.sigmoid_cross_entropy_with_logits(
-            logits=logits, labels=tf.to_float(targets)
-        )
+        losses = tf.nn.sigmoid_cross_entropy_with_logits(labels=tf.to_float(targets), logits=logits)
 
     # Mean loss across the batch of examples
     mean_loss = tf.reduce_mean(losses, name="mean_loss")
