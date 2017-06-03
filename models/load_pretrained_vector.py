@@ -56,17 +56,19 @@ def load_embedding_vectors_word2vec(vocabulary, filename, binary):
 加载glove 提前训练好的词向量,
 vocabulary 应该是个字典
 '''
+
+
 def load_embedding_vectors_glove(vocabulary, filename, vector_size):
     # load embedding_vectors from the glove
     # initial matrix with random uniform
-    embedding_vectors = np.random.uniform(-0.25, 0.25, (len(vocabulary), vector_size)) #shape:
+    embedding_vectors = np.random.uniform(-0.25, 0.25, (len(vocabulary), vector_size))  # shape:
 
     f = open(filename)
     for line in f:
         values = line.split(" ")
-        word = values[0] #词
+        word = values[0]  # 词
         print('word:  ', word)
-        vector = np.asarray(values[1:], dtype="float32") #向量
+        vector = np.asarray(values[1:], dtype="float32")  # 向量
         idx = vocabulary.get(word)
         if idx != 0:
             embedding_vectors[idx] = vector

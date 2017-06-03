@@ -74,8 +74,9 @@ def tokenizer_fn(iterator):
     # return (x.split(" ") for x in iterator)
     # # 精确模式 HMM 参数用来控制是否使用 HMM 模型  于未登录词，采用了基于汉字成词能力的 HMM 模型，使用了 Viterbi 算法
     for x in iterator:
-        # seg_list = jieba.cut(x, cut_all=False, HMM=True)
-        seg_list = jieba.cut(x, cut_all=True, HMM=True) #精确模式
+
+        # seg_list = jieba.cut(x, cut_all=False, HMM=True)  # 精确模式
+        seg_list = jieba.cut(x, cut_all=True)  # 全模式
         # seg_list = jieba.cut_for_search("小明硕士毕业于中国科学院计算所，后在日本京都大学深造")  # 搜索引擎模式
         # print('seg_list', seg_list)
         no_stop_list = remove_stop(seg_list)
@@ -136,13 +137,13 @@ def create_example_train(row, vocab):
     Creates a training example for the Ubuntu Dialog Corpus dataset.
     Returnsthe a tensorflow.Example Protocol Buffer object.
     """
-    label, question, anwser = row
+    label, question, answer = row
 
     question_transformed = transform_sentence(question, vocab)
-    anwser_transformed = transform_sentence(anwser, vocab)
+    answer_transformed = transform_sentence(answer, vocab)
 
     question_len = len(next(vocab._tokenizer([question])))
-    anwser_len = len(next(vocab._tokenizer([anwser])))
+    answer_len = len(next(vocab._tokenizer([answer])))
 
     label = label.rstrip()
     label = label[-1]
@@ -152,10 +153,10 @@ def create_example_train(row, vocab):
     # New Example
     example = tf.train.Example()
     example.features.feature["question"].int64_list.value.extend(question_transformed)
-    example.features.feature["anwser"].int64_list.value.extend(anwser_transformed)
+    example.features.feature["answer"].int64_list.value.extend(answer_transformed)
     example.features.feature["question_len"].int64_list.value.extend([question_len])
-    example.featlquestionabelures.feature["anwser_len"].int64_list.value.extend([anwser_len])
-    example.features.feature["lquestionabel"].int64_list.value.extend([label])
+    example.features.feature["answer_len"].int64_list.value.extend([answer_len])
+    example.features.feature["label"].int64_list.value.extend([label])
     return example  # 返回一个样例
 
 
@@ -193,7 +194,7 @@ if __name__ == "__main__":
     # 文件迭代器
     input_iter = create_txt_iter(TRAIN_PATH)
 
-    # 文件列表 label, question, anwser
+    # 文件列表 label, question, answer
     input_iter = (x[1].rstrip() + " " + x[2].rstrip() for x in input_iter)
 
     # Create vocabulary.txt file

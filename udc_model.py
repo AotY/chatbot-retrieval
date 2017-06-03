@@ -27,8 +27,8 @@ def create_model_fn(hparams, model_impl):
         question, question_len = get_id_feature(
             features, "question", "question_len", hparams.max_question_len)
 
-        anwser, anwser_len = get_id_feature(
-            features, "anwser", "anwser_len", hparams.max_anwser_len)
+        answer, answer_len = get_id_feature(
+            features, "answer", "answer_len", hparams.max_answer_len)
 
         if targets is not None:
             batch_size = targets.get_shape().as_list()[0]
@@ -39,8 +39,8 @@ def create_model_fn(hparams, model_impl):
                 mode,
                 question,
                 question_len,
-                anwser,
-                anwser_len,
+                answer,
+                answer_len,
                 targets)
             train_op = create_train_op(mean_loss, hparams)
             return probs, mean_loss, train_op
@@ -51,16 +51,16 @@ def create_model_fn(hparams, model_impl):
                 mode,
                 question,
                 question_len,
-                anwser,
-                anwser_len,
+                answer,
+                answer_len,
                 None)
             return probs, 0.0, None
 
         if mode == tf.contrib.learn.ModeKeys.EVAL:
             all_questions = [question]
             all_question_lens = [question_len]
-            all_anwsers = [anwser]
-            all_anwser_lens = [anwser_len]
+            all_answers = [answer]
+            all_answer_lens = [answer_len]
             # all_targets = [tf.ones([batch_size, 1], dtype=tf.int64)]
             all_targets = [targets]
             probs, mean_loss = model_impl(
@@ -68,8 +68,8 @@ def create_model_fn(hparams, model_impl):
                 mode,
                 tf.concat(all_questions, 0),
                 tf.concat(all_question_lens, 0),
-                tf.concat(all_anwsers, 0),
-                tf.concat(all_anwser_lens, 0),
+                tf.concat(all_answers, 0),
+                tf.concat(all_answer_lens, 0),
                 tf.concat(all_targets, 0)
             )
             split_probs = tf.split(probs, 1, 0)
@@ -86,8 +86,8 @@ def create_model_fn(hparams, model_impl):
         #         mode,
         #         question,
         #         question_len,
-        #         anwser,
-        #         anwser_len,
+        #         answer,
+        #         answer_len,
         #         targets)
         #
         #     tf.summary.histogram("eval_correct_probs_hist", probs)

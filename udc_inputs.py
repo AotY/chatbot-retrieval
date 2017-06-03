@@ -11,9 +11,9 @@ def get_feature_columns(mode):
     feature_columns.append(tf.contrib.layers.real_valued_column(
         column_name="question_len", dimension=1, dtype=tf.int64))
     feature_columns.append(tf.contrib.layers.real_valued_column(
-        column_name="anwser", dimension=TEXT_FEATURE_SIZE, dtype=tf.int64))
+        column_name="answer", dimension=TEXT_FEATURE_SIZE, dtype=tf.int64))
     feature_columns.append(tf.contrib.layers.real_valued_column(
-        column_name="anwser_len", dimension=1, dtype=tf.int64))
+        column_name="answer_len", dimension=1, dtype=tf.int64))
 
     # During training we have a label feature
     # if mode == tf.contrib.learn.ModeKeys.TRAIN or mode == tf.contrib.learn.ModeKeys.EVAL:
@@ -80,7 +80,7 @@ def create_input_fn(mode, input_files, batch_size, num_epochs):
             randomize_input=True,
             num_epochs=num_epochs,
             # queue_capacity=200000 + batch_size * 10, #Capacity for input queue.
-            queue_capacity=500000 + batch_size * 10, #Capacity for input queue.
+            queue_capacity=500000 + batch_size * 10,  # Capacity for input queue.
             name="read_batch_features_{}".format(mode))
 
         # This is an ugly hack because of a current bug in tf.learn
@@ -97,7 +97,7 @@ def create_input_fn(mode, input_files, batch_size, num_epochs):
             # In evaluation we have 10 utterances.
             # The first one (index 0) is always the correct one
             # target = tf.zeros([batch_size, 1], dtype=tf.int64)
-            #我们需要改为label
+            # 我们需要改为label
             target = feature_map.pop("label")
         return feature_map, target
 

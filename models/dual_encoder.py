@@ -35,7 +35,10 @@ def get_embeddings(hparams):
                                                              hparams.embedding_dim)
     elif hparams.vector_type == 'fastText':
         # return load_embedding_vectors_fastText(vocab_array, hparams.glove_path, len(vocab_array))
-        pass
+        fastText_vectors, fastText_dict = helpers.load_fastText_vectors(hparams.glove_path, vocab=set(vocab_array))
+        initializer = helpers.build_initial_embedding_matrix(vocab_dict, fastText_dict, fastText_vectors,
+                                                             hparams.embedding_dim)
+
 
         # if hparams.glove_path and hparams.vocab_path:
         #     tf.logging.info("Loading Glove embeddings...")
@@ -62,19 +65,18 @@ def dual_encoder_model(
         mode,
         question,
         question_len,
-        anwser,
-        anwser_len,
+        answer,
+        answer_len,
         targets):
-
     # Initialize embedidngs randomly or with pre-trained vectors if available（替换为提前训练好的 vectors)
     embeddings_W = get_embeddings(hparams)
 
-    # Embed the question and the anwser， embedding_lookup-> Looks up `ids` in a list of embedding tensors.
+    # Embed the question and the answer， embedding_lookup-> Looks up `ids` in a list of embedding tensors.
     question_embedded = tf.nn.embedding_lookup(
         embeddings_W, question, name="embed_question")
 
-    anwser_embedded = tf.nn.embedding_lookup(
-        embeddings_W, anwser, name="embed_anwser")
+    answer_embedded = tf.nn.embedding_lookup(
+        embeddings_W, answer, name="embed_answer")
 
     # Build the RNN
     with tf.variable_scope("rnn") as vs:
@@ -85,14 +87,14 @@ def dual_encoder_model(
             use_peepholes=True,  #
             state_is_tuple=True)
 
-        # Run the anwser and question through the RNN
+        # Run the answer and question through the RNN
         rnn_outputs, rnn_states = tf.nn.dynamic_rnn(
             cell,
-            tf.concat([question_embedded, anwser_embedded], 0),
-            sequence_length=tf.concat([question_len, anwser_len], 0),
+            tf.concat([question_embedded, answer_embedded], 0),
+            sequence_length=tf.concat([question_len, answer_len], 0),
             dtype=tf.float32)
 
-        encoding_question, encoding_anwser = tf.split(rnn_states.h, 2, 0)
+        encoding_question, encoding_answer = tf.split(rnn_states.h, 2, 0)
 
     with tf.variable_scope("prediction") as vs:
         # 训练矩阵, ("rnn_dim", 256, "Dimensionality of the RNN cell")
@@ -106,12 +108,12 @@ def dual_encoder_model(
         generated_response = tf.matmul(encoding_question, M)
         generated_response = tf.expand_dims(generated_response, 2)  # Inserts a dimension of 1 into a tensor's shape.
 
-        encoding_anwser = tf.expand_dims(encoding_anwser, 2)
+        encoding_answer = tf.expand_dims(encoding_answer, 2)
 
         # Dot product between generated response and actual response
         # (c * M) * r
-        # logits = tf.batch_matmul(generated_response, encoding_anwser, True)
-        logits = tf.matmul(generated_response, encoding_anwser, True)
+        # logits = tf.batch_matmul(generated_response, encoding_answer, True)
+        logits = tf.matmul(generated_response, encoding_answer, True)
         logits = tf.squeeze(logits, [2])  # Removes dimensions of size 1 from the shape of a tensor.
         # print("logits shape: ", tf.shape(logits))
 

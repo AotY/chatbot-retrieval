@@ -22,7 +22,7 @@ tf.flags.DEFINE_integer("embedding_dim", 300, "Dimensionality of the embeddings"
 tf.flags.DEFINE_integer("rnn_dim", 256, "Dimensionality of the RNN cell")
 # tf.flags.DEFINE_integer("rnn_dim", 128, "Dimensionality of the RNN cell")
 tf.flags.DEFINE_integer("max_question_len", 160, "Truncate questions to this length")
-tf.flags.DEFINE_integer("max_anwser_len", 80, "Truncate anwser to this length")
+tf.flags.DEFINE_integer("max_answer_len", 80, "Truncate answer to this length")
 
 # Pre-trained embeddings
 
@@ -32,7 +32,7 @@ tf.flags.DEFINE_string("glove_path", 'data/pre-trained/glove.840B.300d.txt', \
 tf.flags.DEFINE_string("word2vec_path", 'data/pre-trained/GoogleNews-vectors-negative300.bin', \
                        "Path to pre-trained word2vec vectors")
 
-tf.flags.DEFINE_string("fastText_path", None, "Path to pre-trained fastText vectors")
+tf.flags.DEFINE_string("fastText_path", 'data/pre-trained/wiki.zh.vec', "Path to pre-trained fastText vectors")
 
 # 这个应该是训练文本里面出现的词汇集合
 # tf.flags.DEFINE_string("vocab_path", None, "Path to vocabulary.txt file")
@@ -41,8 +41,8 @@ tf.flags.DEFINE_string("vocab_path", 'data/BoP2017_DBAQ_dev_train_data/vocabular
                        "Path to vocabulary.txt file")
 
 # tf.flags.DEFINE_string("vector_type", 'word2vec', 'word2vec or glove or fastText')
-tf.flags.DEFINE_string("vector_type", 'glove', 'word2vec or glove or fastText')
-# tf.flags.DEFINE_string("vector_type", 'None', 'word2vec or glove or fastText')
+# tf.flags.DEFINE_string("vector_type", 'glove', 'word2vec or glove or fastText')
+tf.flags.DEFINE_string("vector_type", 'fastText', 'word2vec or glove or fastText')
 
 # Training Parameters
 tf.flags.DEFINE_float("learning_rate", 0.001, "Learning rate")
@@ -63,7 +63,7 @@ HParams = namedtuple(
         "eval_batch_size",
         "learning_rate",
         "max_question_len",
-        "max_anwser_len",
+        "max_answer_len",
         "optimizer",
         "rnn_dim",
         "vocab_size",
@@ -84,7 +84,7 @@ def create_hparams():
         learning_rate=FLAGS.learning_rate,
         embedding_dim=FLAGS.embedding_dim,
         max_question_len=FLAGS.max_question_len,
-        max_anwser_len=FLAGS.max_anwser_len,
+        max_answer_len=FLAGS.max_answer_len,
         glove_path=FLAGS.glove_path,
         word2vec_path=FLAGS.word2vec_path,
         fastText_path=FLAGS.fastText_path,

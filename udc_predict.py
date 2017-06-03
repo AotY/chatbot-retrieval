@@ -91,13 +91,13 @@ last_question = '香港会议展览中心会展2期的屋顶的是由什么建�
 with codecs.open(DEV_PATH, encoding='utf-8') as file:
     for line in file:
         line = line.rstrip()
-        label, question, anwser = line.split('\t')
+        label, question, answer = line.split('\t')
 
         if question != last_question:
             INPUT_questions[last_question] = POTENTIAL_RESPONSES
             POTENTIAL_RESPONSES = []
 
-        POTENTIAL_RESPONSES.append(anwser)
+        POTENTIAL_RESPONSES.append(answer)
 
         last_question = question
 print('len INPUT_questions: ', len(INPUT_questions))
@@ -110,16 +110,16 @@ print('len INPUT_questions: ', len(INPUT_questions))
 
 
 
-def get_features(question, anwser):
+def get_features(question, answer):
     question_matrix = np.array(list(vp.transform([question])))
-    anwser_matrix = np.array(list(vp.transform([anwser])))
+    answer_matrix = np.array(list(vp.transform([answer])))
     question_len = len(question.split(" "))
-    anwser_len = len(anwser.split(" "))
+    answer_len = len(answer.split(" "))
     features = {
         "question": tf.convert_to_tensor(question_matrix, dtype=tf.int64),
         "question_len": tf.constant(question_len, shape=[1, 1], dtype=tf.int64),
-        "anwser": tf.convert_to_tensor(anwser_matrix, dtype=tf.int64),
-        "anwser_len": tf.constant(anwser_len, shape=[1, 1], dtype=tf.int64),
+        "answer": tf.convert_to_tensor(answer_matrix, dtype=tf.int64),
+        "answer_len": tf.constant(answer_len, shape=[1, 1], dtype=tf.int64),
     }
     return features, None
 
@@ -140,9 +140,9 @@ if __name__ == "__main__":
 
     predict_file = open(PREDICT_PATH, 'w', encoding='utf-8')
     for question in INPUT_questions:
-        anwsers = INPUT_questions.get(question)
+        answers = INPUT_questions.get(question)
         print("question: {}".format(question))
-        for a in anwsers:
+        for a in answers:
             prob = estimator.predict(input_fn=lambda: get_features(question, a))
             # print("prob float", float(prob))
             # print("prob list", list(prob))
