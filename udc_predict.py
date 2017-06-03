@@ -32,6 +32,9 @@ tf.flags.DEFINE_string(
 
 FLAGS = tf.flags.FLAGS
 DEV_PATH = os.path.join(FLAGS.input_dir, "dev.txt")
+PREDICT_PATH = os.path.join(FLAGS.input_dir, "predict.txt")
+
+LINESEP = os.linesep
 
 if not FLAGS.model_dir:
     print("You must specify a model directory")
@@ -135,22 +138,30 @@ if __name__ == "__main__":
 
     estimator = tf.contrib.learn.Estimator(model_fn=model_fn, model_dir=FLAGS.model_dir)
 
+    predict_file = open(PREDICT_PATH, 'w', encoding='utf-8')
     for question in INPUT_questions:
         anwsers = INPUT_questions.get(question)
         print("question: {}".format(question))
         for a in anwsers:
             prob = estimator.predict(input_fn=lambda: get_features(question, a))
-            print("prob float", float(prob))
-            print("prob list", list(prob))
+            # print("prob float", float(prob))
+            # print("prob list", list(prob))
+            prob = list(prob)[0][0]
+            print("prob ", prob)
+            # write to file
+            predict_file.write(str(prob) + LINESEP)
+    predict_file.close()
 
 
-
-
+    # predict_file = open(PREDICT_PATH, 'w', encoding='utf-8')
     # print("question: {}".format(INPUT_question))
     # for r in POTENTIAL_RESPONSES:
     #     prob = estimator.predict(input_fn=lambda: get_features(INPUT_question, r))
-    #     # print("prob ", prob)
-    #     print("prob type", type(prob))
+    #     # print("prob type", type(prob))
+    #     prob = list(prob)[0][0]
     #     print("prob ", prob)
-    #     # print("prob ", list(prob)[0])
+    #     #write to file
+    #     predict_file.write(str(prob) + LINESEP)
+    #     # print("prob ", list(prob)[0].sum())
     #     # print("{}: {}".format(r, prob.next()[0]))
+    # predict_file.close()
