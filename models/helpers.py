@@ -92,9 +92,9 @@ def load_fastText_vectors(filename, vocab):
     current_idx = 0
     with open(filename, "rb") as f:
         header = f.readline()
-        print('header :  ', header)
+
         vocab_size, vector_size = map(int, header.split())  # 头信息， 记录vocabulary_size and vector_size eg: '314143 300'
-        binary_len = np.dtype('float32').itemsize * vector_size
+        print('vocab_size: {} ,   vector_size: {}'.format(vocab_size, vector_size))
 
         for line_no in range(vocab_size):
             line = f.readline()
@@ -103,7 +103,8 @@ def load_fastText_vectors(filename, vocab):
             parts = str(line.rstrip(), encoding=encoding, errors='strict').split(" ")
             if len(parts) != vector_size + 1:
                 raise ValueError("invalid vector on line %s (is this really the text format?)" % (line_no))
-            word, vector = parts[0], list(map('float32', parts[1:]))
+            # word, vector = parts[0], list(map('float32', parts[1:]))
+            word, vector = parts[0], list(map(np.float, parts[1:]))
             # idx = vocabulary.get(word)
             # if idx != 0:
             #     embedding_vectors[idx] = vector
@@ -116,8 +117,8 @@ def load_fastText_vectors(filename, vocab):
         word_dim = len(vector)
         num_vectors = len(dct)
 
-        tf.logging.info("Found {} out of {} vectors in word2vec".format(num_vectors, len(vocab)))
-        print("Found {} out of {} vectors in word2vec".format(num_vectors, len(vocab)))
+        tf.logging.info("Found {} out of {} vectors in fastText".format(num_vectors, len(vocab)))
+        print("Found {} out of {} vectors in fastText".format(num_vectors, len(vocab)))
         return [np.array(vectors).reshape(num_vectors, word_dim), dct]
 
 

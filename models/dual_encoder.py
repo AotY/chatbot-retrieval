@@ -35,7 +35,7 @@ def get_embeddings(hparams):
                                                              hparams.embedding_dim)
     elif hparams.vector_type == 'fastText':
         # return load_embedding_vectors_fastText(vocab_array, hparams.glove_path, len(vocab_array))
-        fastText_vectors, fastText_dict = helpers.load_fastText_vectors(hparams.glove_path, vocab=set(vocab_array))
+        fastText_vectors, fastText_dict = helpers.load_fastText_vectors(hparams.fastText_path, vocab=set(vocab_array))
         initializer = helpers.build_initial_embedding_matrix(vocab_dict, fastText_dict, fastText_vectors,
                                                              hparams.embedding_dim)
 
