@@ -87,11 +87,16 @@ vp = tf.contrib.learn.preprocessing.VocabularyProcessor.restore(
 
 INPUT_questions = {}
 POTENTIAL_RESPONSES = []
-last_question = '香港会议展览中心会展2期的屋顶的是由什么建成的，形状是什么？'
+last_question = None
+is_first = True
 with codecs.open(DEV_PATH, encoding='utf-8') as file:
     for line in file:
         line = line.rstrip()
         label, question, answer = line.split('\t')
+
+        if is_first: #记录第一个问题
+            last_question = question
+            is_first = False
 
         if question != last_question:
             INPUT_questions[last_question] = POTENTIAL_RESPONSES
@@ -100,6 +105,7 @@ with codecs.open(DEV_PATH, encoding='utf-8') as file:
         POTENTIAL_RESPONSES.append(answer)
 
         last_question = question
+
 print('len INPUT_questions: ', len(INPUT_questions))
 
 # Load your own data here
@@ -139,9 +145,7 @@ if __name__ == "__main__":
     estimator = tf.contrib.learn.Estimator(model_fn=model_fn, model_dir=FLAGS.model_dir)
 
     predict_file = open(PREDICT_PATH, 'w', encoding='utf-8')
-    for question in INPUT_questions:
-        answers = INPUT_questions.get(question)
-        print("question: {}".format(question))
+    for question, answers in INPUT_questions.items():
         for a in answers:
             prob = estimator.predict(input_fn=lambda: get_features(question, a))
             # print("prob float", float(prob))
@@ -150,6 +154,18 @@ if __name__ == "__main__":
             print("prob ", prob)
             # write to file
             predict_file.write(str(prob) + LINESEP)
+
+    # for question in INPUT_questions:
+    #     answers = INPUT_questions.get(question)
+    #     print("question: {}".format(question))
+    #     for a in answers:
+    #         prob = estimator.predict(input_fn=lambda: get_features(question, a))
+    #         # print("prob float", float(prob))
+    #         # print("prob list", list(prob))
+    #         prob = list(prob)[0][0]
+    #         print("prob ", prob)
+    #         # write to file
+    #         predict_file.write(str(prob) + LINESEP)
     predict_file.close()
 
 
