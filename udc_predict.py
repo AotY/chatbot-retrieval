@@ -151,7 +151,7 @@ if __name__ == "__main__":
             # print("prob float", float(prob))
             # print("prob list", list(prob))
             prob = list(prob)[0][0]
-            print("prob ", prob)
+            print("{} - {} : {}".format(question, a, prob))
             # write to file
             predict_file.write(str(prob) + LINESEP)
 

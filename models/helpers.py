@@ -2,7 +2,8 @@ import array
 import numpy as np
 import tensorflow as tf
 from collections import defaultdict
-import codecs
+import os
+import pickle
 
 
 def load_vocab(filename):
@@ -86,6 +87,11 @@ def load_fastText_vectors(filename, vocab):
     Load fastText vectors from wiki.zh.vec file.
     Optionally limit the vocabulary to save memory. `vocab` should be a set.
     """
+    embedding_vectors = None
+    if os.path.exists('./data/tmp/embedding_vectors.pickle'):
+        embedding_vectors = pickle.load(open('./data/tmp/embedding_vectors.pickle', 'rb'))
+        return embedding_vectors
+
     encoding = 'utf-8'
     dct = {}
     vectors = array.array('d')
@@ -119,7 +125,9 @@ def load_fastText_vectors(filename, vocab):
 
         tf.logging.info("Found {} out of {} vectors in fastText".format(num_vectors, len(vocab)))
         print("Found {} out of {} vectors in fastText".format(num_vectors, len(vocab)))
-        return [np.array(vectors).reshape(num_vectors, word_dim), dct]
+        embedding_vectors = [np.array(vectors).reshape(num_vectors, word_dim), dct]
+        pickle.dump(embedding_vectors, open('./data/tmp/embedding_vectors.pickle', 'wb'))
+        return embedding_vectors
 
 
 
