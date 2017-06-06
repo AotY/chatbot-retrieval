@@ -32,7 +32,9 @@ tf.flags.DEFINE_string(
 
 FLAGS = tf.flags.FLAGS
 DEV_PATH = os.path.join(FLAGS.input_dir, "dev.txt")
-PREDICT_PATH = os.path.join(FLAGS.input_dir, "predict.txt")
+
+PREDICT_PATH = os.path.join(FLAGS.input_dir, "output.txt")
+TEST_PATH = os.path.join(FLAGS.input_dir, "test.txt")
 
 LINESEP = os.linesep
 
@@ -50,7 +52,7 @@ def init_jieba():
 
 init_jieba()
 
-bloomFilter = BloomFilter(capacity=1000, error_rate=0.001)
+bloomFilter = BloomFilter(capacity=100, error_rate=0.001)
 
 
 # 加载停顿词
@@ -89,10 +91,14 @@ INPUT_questions = {}
 POTENTIAL_RESPONSES = []
 last_question = None
 is_first = True
-with codecs.open(DEV_PATH, encoding='utf-8') as file:
+with codecs.open(TEST_PATH, encoding='utf-8') as file:
     for line in file:
         line = line.rstrip()
-        label, question, answer = line.split('\t')
+
+        # label, question, answer = line.split('\t')
+        # items = line.split('\t')
+        # print('line: ', line)
+        question, answer = line.split('\t')
 
         if is_first: #记录第一个问题
             last_question = question
@@ -151,7 +157,7 @@ if __name__ == "__main__":
             # print("prob float", float(prob))
             # print("prob list", list(prob))
             prob = list(prob)[0][0]
-            print("{} - {} : {}".format(question, a, prob))
+            # print("{} - {} : {}".format(question, a, prob))
             # write to file
             predict_file.write(str(prob) + LINESEP)
 
