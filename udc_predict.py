@@ -1,7 +1,5 @@
 import codecs
 import os
-import time
-import itertools
 import sys
 
 import jieba
@@ -9,12 +7,9 @@ import numpy as np
 import tensorflow as tf
 from pybloom import BloomFilter
 
-import udc_model
 import udc_hparams
-import udc_metrics
-import udc_inputs
+import udc_model
 from models.dual_encoder import dual_encoder_model
-from models.helpers import load_vocab
 
 # from termcolor import colored
 

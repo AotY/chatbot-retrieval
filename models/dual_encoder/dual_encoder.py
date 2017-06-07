@@ -1,9 +1,7 @@
 import tensorflow as tf
-import numpy as np
 
 import udc_hparams
 from models import helpers
-from models.load_pretrained_vector import load_embedding_vectors_word2vec, load_embedding_vectors_glove
 
 FLAGS = tf.flags.FLAGS
 
